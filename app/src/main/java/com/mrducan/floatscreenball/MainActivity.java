@@ -32,21 +32,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mMediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        startIntent();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void startIntent() {
-        if (intent != null && result != 0) {
-            ((MyApplication) getApplication()).setResultCode(result);
-            ((MyApplication) getApplication()).setIntent(intent);
-            Intent intent = new Intent(getApplicationContext(), FloatBallService.class);
-            startService(intent);
-        } else {
-            startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
-            ((MyApplication) getApplication()).setmMediaProjectionManager(mMediaProjectionManager);
-        }
-    }
 
     //在onactivity里处理用户的选择进行处理
     @Override
@@ -58,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
             } else if (data != null && resultCode != 0) {
                 result = resultCode;
                 intent = data;
-                ((MyApplication) getApplication()).setResultCode(resultCode);
-                ((MyApplication) getApplication()).setIntent(data);
             }
         }
     }
