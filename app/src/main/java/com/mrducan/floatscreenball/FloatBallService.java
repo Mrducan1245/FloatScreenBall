@@ -95,7 +95,6 @@ public class FloatBallService extends Service {
         return 1;
     }
 
-
     /**
      * 生成漂浮球
      */
@@ -144,7 +143,9 @@ public class FloatBallService extends Service {
                 //按一下就截图
                 case MotionEvent.ACTION_DOWN:
 
-                    PhotoUtil.screenShot(mWindowManager,mediaProjection);
+                    ScreenShot.getWH(mWindowManager);
+                    ScreenShot.createImageReader();
+                    ScreenShot.beginScreenShot(FloatBallService.this,intent,application);
 
                     Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                     break;
