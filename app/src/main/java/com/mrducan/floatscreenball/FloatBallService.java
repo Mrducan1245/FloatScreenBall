@@ -48,7 +48,7 @@ public class FloatBallService extends Service {
     private VirtualDisplay mVirtualDisplay = null;
     public static int mResultCode = 0;
     public static Intent mResultData = null;
-    public static MediaProjectionManager mMediaProjectionManager1 = null;
+    public static MediaProjectionManager mMediaProjectionManager = null;
     private WindowManager mWindowManager = null;
     private int windowWidth = 0;
     private int windowHeight = 0;
@@ -59,6 +59,12 @@ public class FloatBallService extends Service {
     private String strDate;
     private String pathImage;
     private String nameImage;
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public static MediaProjectionManager getmMediaProjectionManager(Context context){
+        return (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+
+    }
 
     public FloatBallService() {
     }
@@ -78,6 +84,7 @@ public class FloatBallService extends Service {
     public void onCreate() {
         super.onCreate();
         mLayoutInflater = LayoutInflater.from(this);
+        mWindowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 
     }
 

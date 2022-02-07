@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMediaProjectionManager = (MediaProjectionManager) getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        mMediaProjectionManager = FloatBallService.getmMediaProjectionManager(getApplicationContext());
+        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(),REQUEST_MEDIA_PROJECTION);
     }
 
 
@@ -43,15 +44,14 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode != Activity.RESULT_OK) {
                 return;
             } else if (data != null && resultCode != 0) {
-                result = resultCode;
-                intent = data;
+                FloatBallService.mMediaProjectionManager =  mMediaProjectionManager;
             }
         }
     }
 
     @SuppressLint("NonConstantResourceId")
     public void onClick(View view) {
-        Intent intent = new Intent(getApplicationContext(), FloatBallService.class);
+        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:
