@@ -2,6 +2,7 @@ package com.mrducan.floatscreenball;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -41,30 +43,17 @@ public class FloatBallService extends Service {
     private WindowManager.LayoutParams mLayoutParams;
     private int mCurrentX;
     private int mCurrentY;
-    private static int mFloatViewWidth = 80;
-    private static int mFloatViewHeight = 80;
+    private int mFloatViewWidth = 80;
+    private int mFloatViewHeight = 80;
+    private WindowManager mWindowManager ;
+    private MediaProjectionManager mediaProjectionManager;
+    private MediaProjection mediaProjection;
 
-    public static MediaProjection mMediaProjection = null;
-    private VirtualDisplay mVirtualDisplay = null;
-    public static MediaProjectionManager mMediaProjectionManager = null;
-    private WindowManager mWindowManager = null;
-    private int windowWidth = 0;
-    private int windowHeight = 0;
-    private ImageReader mImageReader = null;
-    private DisplayMetrics metrics = null;
-    private int mScreenDensity = 0;
-    private SimpleDateFormat dateFormat;
-    private String strDate;
-    private String pathImage;
-    private String nameImage;
+    public static MyApplication application;
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public static MediaProjectionManager getmMediaProjectionManager(Context context){
-        return (MediaProjectionManager) context.getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-
-    }
 
     public FloatBallService() {
+
     }
 
 
@@ -84,6 +73,8 @@ public class FloatBallService extends Service {
         mLayoutInflater = LayoutInflater.from(this);
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 
+        mediaProjectionManager = application.getMediaProjectionManager();
+        mediaProjection = application.getMediaProjection();
     }
 
 
@@ -152,8 +143,10 @@ public class FloatBallService extends Service {
             switch (action) {
                 //按一下就截图
                 case MotionEvent.ACTION_DOWN:
-                    Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
 
+                    PhotoUtil.screenShot(mWindowManager,mediaProjection);
+
+                    Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                     break;
                 case MotionEvent.ACTION_MOVE:
                     updateFloatView();

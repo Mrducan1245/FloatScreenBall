@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.media.projection.MediaProjection;
@@ -19,11 +20,7 @@ import android.view.WindowManager;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int result = 0;
-    private Intent intent = null;
-    private int REQUEST_MEDIA_PROJECTION = 1;
-    private MediaProjectionManager mMediaProjectionManager;
-    
+    private MyApplication myApplication;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -31,24 +28,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mMediaProjectionManager = FloatBallService.getmMediaProjectionManager(getApplicationContext());
-        startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(),REQUEST_MEDIA_PROJECTION);
+        myApplication = new MyApplication();
+        FloatBallService.application = myApplication;
+
+        MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+        Intent intent = mediaProjectionManager.createScreenCaptureIntent();
+        startActivityForResult(intent, 333);
     }
 
-
-    //在onactivity里处理用户的选择进行处理
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_MEDIA_PROJECTION) {
-            if (resultCode != Activity.RESULT_OK) {
-                return;
-            } else if (data != null && resultCode != 0) {
-                FloatBallService.mMediaProjection =  mMediaProjectionManager.getMediaProjection(resultCode,data);
+        if (requestCode == 333 && data != null){
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+                MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
+                myApplication.setMediaProjectionManager(mediaProjectionManager);
+                myApplication.setMediaProjection(mediaProjectionManager.getMediaProjection(resultCode,data));
+                Log.e("onActivity","成功把MediaProjectionManager和MediaProjection赋给MyApplication");
             }
         }
     }
+
+
 
     @SuppressLint("NonConstantResourceId")
     public void onClick(View view) {
