@@ -44,10 +44,8 @@ public class FloatBallService extends Service {
     private static int mFloatViewWidth = 80;
     private static int mFloatViewHeight = 80;
 
-    private MediaProjection mMediaProjection = null;
+    public static MediaProjection mMediaProjection = null;
     private VirtualDisplay mVirtualDisplay = null;
-    public static int mResultCode = 0;
-    public static Intent mResultData = null;
     public static MediaProjectionManager mMediaProjectionManager = null;
     private WindowManager mWindowManager = null;
     private int windowWidth = 0;
@@ -140,6 +138,7 @@ public class FloatBallService extends Service {
     /*处理视图的拖动，这里只对Move事件做了处理，用户也可以对点击事件做处理，例如：点击浮动窗口时，启动应用的主Activity*/
     private class FloatViewTouchListner implements View.OnTouchListener {
         Intent intent = new Intent(FloatBallService.this,MainActivity.class);
+        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             /**
@@ -154,6 +153,7 @@ public class FloatBallService extends Service {
                 //按一下就截图
                 case MotionEvent.ACTION_DOWN:
                     Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
+
                     break;
                 case MotionEvent.ACTION_MOVE:
                     updateFloatView();

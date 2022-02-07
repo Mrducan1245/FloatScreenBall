@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //在onactivity里处理用户的选择进行处理
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode != Activity.RESULT_OK) {
                 return;
             } else if (data != null && resultCode != 0) {
-                FloatBallService.mMediaProjectionManager =  mMediaProjectionManager;
+                FloatBallService.mMediaProjection =  mMediaProjectionManager.getMediaProjection(resultCode,data);
             }
         }
     }
