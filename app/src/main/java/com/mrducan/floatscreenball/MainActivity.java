@@ -35,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
         startIntent();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void startIntent() {
         if (intent != null && result != 0) {
             ((MyApplication) getApplication()).setResultCode(result);
@@ -43,10 +42,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), FloatBallService.class);
             startService(intent);
         } else {
-            startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                startActivityForResult(mMediaProjectionManager.createScreenCaptureIntent(), REQUEST_MEDIA_PROJECTION);
+            }
             ((MyApplication) getApplication()).setmMediaProjectionManager(mMediaProjectionManager);
         }
     }
+
 
     //在onactivity里处理用户的选择进行处理
     @Override
@@ -60,13 +62,16 @@ public class MainActivity extends AppCompatActivity {
                 intent = data;
                 ((MyApplication) getApplication()).setResultCode(resultCode);
                 ((MyApplication) getApplication()).setIntent(data);
+                Intent intent = new Intent(getApplicationContext(), FloatBallService.class);
+                startService(intent);
+                finish();
             }
         }
     }
 
     @SuppressLint("NonConstantResourceId")
     public void onClick(View view) {
-        Intent intent = new Intent(getApplicationContext(), FloatBallService.class);
+        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:

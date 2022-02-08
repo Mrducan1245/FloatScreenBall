@@ -16,6 +16,7 @@ import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -70,6 +71,10 @@ public class FloatBallService extends Service {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
+
+
+
+
     /**
      * 初始化 WindowManager和 LayoutInflater
      */
@@ -77,8 +82,44 @@ public class FloatBallService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        createVirtualEnvironment();
         mLayoutInflater = LayoutInflater.from(this);
+        createFloatView();
+        createVirtualEnvironment();
+    }
+
+    private void createFloatView() {
+        creatView();
+        mFloatBall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // hide the button
+                mFloatBall.setVisibility(View.INVISIBLE);
+
+                Handler handler1 = new Handler();
+                handler1.postDelayed(new Runnable() {
+                    public void run() {
+                        //start virtual
+                        startVirtual();
+                    }
+                }, 500);
+
+                Handler handler2 = new Handler();
+                handler2.postDelayed(new Runnable() {
+                    public void run() {
+                        //capture the screen
+                        startCapture();
+                    }
+                }, 1500);
+
+                Handler handler3 = new Handler();
+                handler3.postDelayed(new Runnable() {
+                    public void run() {
+                        mFloatBall.setVisibility(View.VISIBLE);
+                        //stopVirtual();
+                    }
+                }, 1000);
+            }
+        });
 
     }
 
@@ -113,7 +154,6 @@ public class FloatBallService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        creatView();
         return 1;
     }
 
@@ -248,8 +288,6 @@ public class FloatBallService extends Service {
             switch (action) {
                 //按一下就截图
                 case MotionEvent.ACTION_DOWN:
-                    startVirtual();
-                    startCapture();
                     Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                     break;
                 case MotionEvent.ACTION_MOVE:
