@@ -21,6 +21,7 @@ import android.view.WindowManager;
 public class MainActivity extends AppCompatActivity {
 
     private MyApplication myApplication;
+    private  Intent myIntent;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -28,8 +29,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        myApplication = new MyApplication();
-        FloatBallService.application = myApplication;
+        myApplication = (MyApplication) getApplication();
+//
+//        myApplication = new MyApplication();
+//        FloatBallService.application = myApplication;
 
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent intent = mediaProjectionManager.createScreenCaptureIntent();
@@ -43,7 +46,10 @@ public class MainActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
                 MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
                 myApplication.setMediaProjectionManager(mediaProjectionManager);
-                myApplication.setMediaProjection(mediaProjectionManager.getMediaProjection(resultCode,data));
+                myIntent = new Intent(MainActivity.this,FloatBallService.class);
+
+                myIntent.putExtra("code",resultCode);
+                myIntent.putExtra("data",data);
                 Log.e("onActivity","成功把MediaProjectionManager和MediaProjection赋给MyApplication");
             }
         }
@@ -53,11 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     public void onClick(View view) {
-        Intent intent = new Intent(MainActivity.this, FloatBallService.class);
         String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:
-                startService(intent);
+                startService(myIntent);
                 break;
             case R.id.show_btn:
                 Log.e(TAG, "show_btn");
@@ -66,7 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "hide_btn");
                 break;
             case R.id.close_btn:
-                stopService(intent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ScreenShot.stopMediaProjection();
+                }
+                stopService(myIntent);
                 break;
         }
     }

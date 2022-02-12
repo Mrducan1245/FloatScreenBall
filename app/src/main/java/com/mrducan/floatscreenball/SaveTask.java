@@ -6,6 +6,7 @@ import android.media.Image.Plane;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
@@ -55,6 +56,7 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
             FileOutputStream fos = null;
             try {
                 fileURL = createFile();
+                Log.e("doInBackground","图片名字未："+fileURL);
                 fileImage = new File(fileURL);
                 if (!fileImage.exists()) {
                     fileImage.createNewFile();

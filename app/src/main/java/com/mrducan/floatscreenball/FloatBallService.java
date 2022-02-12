@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -33,8 +34,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 public class FloatBallService extends Service {
 
@@ -49,7 +52,11 @@ public class FloatBallService extends Service {
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
 
-    public static MyApplication application;
+    private int resultCode;
+    private Intent resultData;
+
+
+    public  MyApplication application;
 
 
     public FloatBallService() {
@@ -73,8 +80,13 @@ public class FloatBallService extends Service {
         mLayoutInflater = LayoutInflater.from(this);
         mWindowManager = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 
+        application = (MyApplication) getApplication();
         mediaProjectionManager = application.getMediaProjectionManager();
-        mediaProjection = application.getMediaProjection();
+
+        creatView();
+        setView();
+        Log.d(" FloatBallService","application" + application);
+        Log.d(" FloatBallService","mediaProjection" + mediaProjection);
     }
 
 
@@ -91,7 +103,15 @@ public class FloatBallService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        creatView();
+        resultCode = intent.getIntExtra("code",-1);
+        resultData = intent.getParcelableExtra("data");
+
+        Log.e(" resultCode"+ resultCode," resultData"+ resultData);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,resultData);
+            Log.e(" onStartCommand"," mediaProjection"+ mediaProjection);
+        }
         return 1;
     }
 
@@ -100,7 +120,7 @@ public class FloatBallService extends Service {
      */
     private void creatView() {
         mFloatBall = mLayoutInflater.inflate(R.layout.sy_floating_view,null);
-        mFloatBall.setOnTouchListener(new FloatViewTouchListner());
+//        mFloatBall.setOnTouchListener(new FloatViewTouchListner());
         mLayoutParams = new WindowManager.LayoutParams();
         mLayoutParams.gravity = Gravity.LEFT |Gravity.TOP;
         //设置window type
@@ -118,6 +138,26 @@ public class FloatBallService extends Service {
         mWindowManager.addView(mFloatBall,mLayoutParams);
     }
 
+    /**
+     * 设置点击事件
+     */
+    private void setView(){
+        Intent intent = new Intent(FloatBallService.this,MainActivity.class);
+        Log.e("MotionEvent","intent"+intent);
+        mFloatBall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScreenShot.getWH(mWindowManager);
+                Log.e("MotionEvent","getWH");
+                ScreenShot.createImageReader();
+                Log.e("MotionEvent","createImageReader");
+                ScreenShot.beginScreenShot(mediaProjection);
+                Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
+            }
+        });
+
+    }
+
     /*该方法用来更新视图的位置，其实就是改变(LayoutParams.x,LayoutParams.y)的值*/
     private void updateFloatView() {
         mLayoutParams.x = mCurrentX;
@@ -126,36 +166,29 @@ public class FloatBallService extends Service {
     }
 
     /*处理视图的拖动，这里只对Move事件做了处理，用户也可以对点击事件做处理，例如：点击浮动窗口时，启动应用的主Activity*/
-    private class FloatViewTouchListner implements View.OnTouchListener {
-        Intent intent = new Intent(FloatBallService.this,MainActivity.class);
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            /**
-             * getRawX(),getRawY()这两个方法很重要。通常情况下，我们使用的是getX(),getY()来获得事件的触发点坐标，
-             * 但getX(),getY()获得的是事件触发点相对与视图左上角的坐标；而getRawX(),getRawY()获得的是事件触发点
-             * 相对与屏幕左上角的坐标。由于LayoutParams中的x,y是相对与屏幕的，所以需要使用getRawX(),getRawY()。
-             */
-            mCurrentX = (int) event.getRawX() - mFloatViewWidth;
-            mCurrentY = (int) event.getRawY() - mFloatViewHeight;
-            int action = event.getAction();
-            switch (action) {
-                //按一下就截图
-                case MotionEvent.ACTION_DOWN:
-
-                    ScreenShot.getWH(mWindowManager);
-                    ScreenShot.createImageReader();
-                    ScreenShot.beginScreenShot(FloatBallService.this,intent,application);
-
-                    Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    updateFloatView();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    break;
-            }
-            return true;
-        }
-    }
+//    private class FloatViewTouchListner implements View.OnTouchListener {
+//        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+//        @Override
+//        public boolean onTouch(View v, MotionEvent event) {
+//            /**
+//             * getRawX(),getRawY()这两个方法很重要。通常情况下，我们使用的是getX(),getY()来获得事件的触发点坐标，
+//             * 但getX(),getY()获得的是事件触发点相对与视图左上角的坐标；而getRawX(),getRawY()获得的是事件触发点
+//             * 相对与屏幕左上角的坐标。由于LayoutParams中的x,y是相对与屏幕的，所以需要使用getRawX(),getRawY()。
+//             */
+//            mCurrentX = (int) event.getRawX() - mFloatViewWidth;
+//            mCurrentY = (int) event.getRawY() - mFloatViewHeight;
+//            int action = event.getAction();
+//            switch (action) {
+//                //按一下就截图
+//                case MotionEvent.ACTION_DOWN:
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    updateFloatView();
+//                    break;
+//                case MotionEvent.ACTION_UP:
+//                    break;
+//            }
+//            return true;
+//        }
+//    }
 }

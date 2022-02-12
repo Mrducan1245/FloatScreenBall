@@ -15,6 +15,7 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
 
@@ -33,16 +34,17 @@ public class ScreenShot {
     public static Surface surface;
 
     //设置媒体项目类
-    public static void setUpMediaProjection(Service service, Intent scIntent,MyApplication application) {
-        if (scIntent == null) {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            service.startActivity(intent);
-        } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mediaProjection = application.getMediaProjection();
-            }
-        }
+    public static void setUpMediaProjection(MediaProjection outMediaProjection) {
+//        if (scIntent == null) {
+//            Intent intent = new Intent(Intent.ACTION_MAIN);
+//            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//            service.startActivity(intent);
+//        } else {
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Log.e("setUpMediaProjection","outMediaProjection");
+                mediaProjection = outMediaProjection;
+//            }
+//        }
     }
 
 
@@ -53,37 +55,44 @@ public class ScreenShot {
         screenDensity = metrics.densityDpi;
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
+        Log.e("MotionEvent","getWH");
     }
 
     @SuppressLint("WrongConstant")
     public static void createImageReader() {
+        Log.d(" FloatBallService","该函数确实被调用了");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 2);
+            imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 1);
+            Log.d(" FloatBallService","imageReader" + imageReader);
         }
     }
 
-    public static void beginScreenShot(final Service service, final Intent intent,MyApplication application) {
+    public static void beginScreenShot(MediaProjection outMediaProjection) {
+        Log.e("beginScreenShot","beginScreenShot" + outMediaProjection );
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                beginVirtual(service, intent,application);
+                Log.e("beginScreenShot_run","beginScreenShot_run");
+                beginVirtual(outMediaProjection);
+                Log.e("beginScreenShot_run","执行完 beginVirtual"+virtualDisplay);
             }
         }, 0);
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                beginCapture(service, intent,application);
+                beginCapture(outMediaProjection);
+                Log.e("beginScreenShot_run","执行完  beginCapture"+virtualDisplay);
             }
         }, 150);
     }
 
-    private static void beginVirtual(Service service, Intent intent,MyApplication application) {
+    private static void beginVirtual(MediaProjection outMediaProjection) {
         if (null != mediaProjection) {
             virtualDisplay();
         } else {
-            setUpMediaProjection(service, intent,application);
+            setUpMediaProjection(outMediaProjection);
             virtualDisplay();
         }
     }
@@ -91,6 +100,7 @@ public class ScreenShot {
     private static void virtualDisplay() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             surface = imageReader.getSurface();
+            Log.e(" FloatBallService"," surface" +  surface);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             virtualDisplay = mediaProjection.createVirtualDisplay("screen-mirror", screenWidth,
@@ -105,11 +115,12 @@ public class ScreenShot {
 
     }
 
-    private static void beginCapture(Service service, Intent intent,MyApplication application) {
+    private static void beginCapture(MediaProjection outMediaProjection) {
         Image acquireLatestImage = null;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 acquireLatestImage = imageReader.acquireLatestImage();
+                Log.e("beginCapture","acquireLatestImage"+ acquireLatestImage);
             }
         } catch (IllegalStateException e) {
             if (null != acquireLatestImage) {
@@ -123,19 +134,19 @@ public class ScreenShot {
         }
 
         if (acquireLatestImage == null) {
-            beginScreenShot(service, intent,application);
+            beginScreenShot(outMediaProjection);
         } else {
             SaveTask saveTask = new SaveTask();
-          AsyncTaskCompat.executeParallel(saveTask, acquireLatestImage);
+            AsyncTaskCompat.executeParallel(saveTask, acquireLatestImage);
 
             new Handler().postDelayed(new Runnable() {
                 @RequiresApi(api = Build.VERSION_CODES.KITKAT)
                 @Override
                 public void run() {
                     releaseVirtual();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        stopMediaProjection();
-                    }
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+////                        stopMediaProjection();
+//                    }
                 }
             }, 1000);
         }
@@ -150,7 +161,7 @@ public class ScreenShot {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static void stopMediaProjection() {
+    public static void stopMediaProjection() {
         if (null != mediaProjection) {
             mediaProjection.stop();
             mediaProjection = null;
