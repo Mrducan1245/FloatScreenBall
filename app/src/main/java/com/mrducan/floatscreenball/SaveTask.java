@@ -6,6 +6,7 @@ import android.media.Image.Plane;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -41,6 +42,7 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
 
         final Plane[] planes = image.getPlanes();
         final ByteBuffer buffer = planes[0].getBuffer();
+
         // 每个像素的间距
         int pixelStride = planes[0].getPixelStride();
         // 总的间距
@@ -58,14 +60,12 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                 fileURL = createFile();
                 Log.e("doInBackground","图片名字未："+fileURL);
                 fileImage = new File(fileURL);
+                PosteTask.postePic(buffer);
                 if (!fileImage.exists()) {
                     fileImage.createNewFile();
                     fos = new FileOutputStream(fileImage);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                     fos.flush();
-
-                    //发送图片到客户端
-
                 }
             } catch (IOException e) {
                 fileImage = null;
