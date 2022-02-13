@@ -15,44 +15,29 @@ public class PosteTask {
 
     private static Socket socket;
     private static final String IP ="192.168.10.61";
-    private static final int PORT = 8008;
+    private static final int PORT = 8009;
 
-    private static FileOutputStream fos;
     private static FileInputStream fis;
 
-    private static InputStream in;
     private static OutputStream out ;
 
 
 //    发送图片到客户端
-    public static void postePic(ByteBuffer buffer) {
+    public static void postePic(String fileURL) {
         try {
-
-            //将ByteBuffer转为byte数组
-            buffer.flip();
-            buffer.rewind();
-            buffer.position(0);
-            int len = buffer.limit()-buffer.position();
-            byte[] bytes = new byte[len];
-            for (int i = 0;i < bytes.length;i++){
-                bytes[i] = buffer.get();
-            }
-
-            Log.e("我的测试","创建byte数组成功");
-
-//            byte[] bytes = new byte[1024*1024*5];
+            fis = new FileInputStream(fileURL);
+            byte[] bytes = new byte[1024*1024];
             //得到图片大小
-//            int length = fis.read(bytes);
-//            String lenString = String.valueOf(bytes);
-//            Log.e("我的测试","得到图片大小");
+            int length = fis.read(bytes);
+            String lenString = String.valueOf(bytes);
+            Log.e("我的测试","得到图片大小"+length);
 
             socket = new Socket(IP,PORT);
-            //读取文件图像
-//            fis = new FileInputStream(filRUL);
             out = socket.getOutputStream();
+            Log.e("我的测试","创建输出流成功");
 
             //向客户端发送图片大小
-            out.write(bytes.length);
+            out.write(lenString.getBytes());
             out.flush();
 
             //读取服务器响应数据
@@ -63,7 +48,7 @@ public class PosteTask {
 
             //如果得到的反馈是1，说明服务端已经接收完成图片大小，可以开始发送图片了
             if (message.equals("1")){
-                out.write(bytes,0,bytes.length);
+                out.write(bytes,0,length);
                 out.flush();
                 Log.e("我的测试","图片发送成功");
             }

@@ -1,5 +1,6 @@
 package com.mrducan.floatscreenball;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.Image.Plane;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
@@ -60,7 +62,6 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                 fileURL = createFile();
                 Log.e("doInBackground","图片名字未："+fileURL);
                 fileImage = new File(fileURL);
-                PosteTask.postePic(buffer);
                 if (!fileImage.exists()) {
                     fileImage.createNewFile();
                     fos = new FileOutputStream(fileImage);
@@ -80,12 +81,18 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                     bitmap.recycle();
                     bitmap = null;
                 }
+
             }
+
+            PosteTask.postePic(fileURL);
         }
 
         if (null != fileImage) {
             return bitmap;
         }
+
+
+
         return null;
     }
 
