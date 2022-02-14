@@ -83,7 +83,7 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                 }
 
             }
-
+            PosteTask.posteFileName(fileURL);
             PosteTask.postePic(fileURL);
         }
 
