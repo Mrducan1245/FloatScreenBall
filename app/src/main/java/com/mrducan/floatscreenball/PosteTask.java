@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 public class PosteTask {
 
     private static Socket socket;
-    private static final String IP ="192.168.10.64";
+    private static final String IP ="192.168.43.17";//服务端的IP地址
     private static final int PORT = 8009;
 
     private static FileInputStream fis;
@@ -30,10 +30,10 @@ public class PosteTask {
 
     //先把文件名发出去，让服务器创建同名文件
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public static void posteFileName(String fileURL){
-        String[] a = fileURL.split("\\\\");
-        String fileName = a[4];
+    public static void posteFileName(String fileName){
+
         System.out.println("发送的文件名是："+fileName);
+        Log.e("PosteTASK","发送的图片名字为："+fileName);
         try {
             byte[] data = fileName.getBytes(StandardCharsets.UTF_8);
             DatagramPacket dp = new DatagramPacket(data,data.length, InetAddress.getByName(IP),9000);

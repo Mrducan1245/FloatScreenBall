@@ -23,6 +23,7 @@ import java.util.Locale;
 
 public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
     public String fileURL;
+    public String fileName;
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected Bitmap doInBackground(Image... args) {
@@ -83,15 +84,13 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                 }
 
             }
-            PosteTask.posteFileName(fileURL);
+            PosteTask.posteFileName(fileName);
             PosteTask.postePic(fileURL);
         }
 
         if (null != fileImage) {
             return bitmap;
         }
-
-
 
         return null;
     }
@@ -109,7 +108,8 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
         String outDir = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator;
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA);
         String date = simpleDateFormat.format(new Date());
-        return outDir + date + ".png";
+        fileName = date + ".png";
+        return outDir + fileName;
     }
 
 }
