@@ -1,10 +1,12 @@
 package com.mrducan.floatscreenball;
 
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -47,38 +49,29 @@ public class PosteTask {
 
 
 //    发送图片到客户端
-    public static void postePic(String fileURL) {
+    public static void postePic(Bitmap bitmap) {
         try {
-            fis = new FileInputStream(fileURL);
-            byte[] bytes = new byte[1024];
-            //得到图片大小
+//            fis = new FileInputStream(fileURL);
             socket = new Socket(IP,PORT);
             out = socket.getOutputStream();
-            System.out.println("socket创建成功");
-
-            //读取服务器响应数据
-//            byte[] getRec = new byte[1];
-//            InputStream is = socket.getInputStream();
-//            is.read(getRec);
-//            String message = new String(getRec);
-//
-//            //如果得到的反馈是1，说明服务端已经接收完成图片大小，可以开始发送图片了
-//            if (message.equals("1")){
-//                out.write(bytes,0,length);
-//                out.flush();
-//            }
-            while (fis.read(bytes) != -1){
-                out.write(bytes);
-                out.flush();
-            }
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100,baos);
+            byte[] data = baos.toByteArray();
+            out.write(data);
             //关闭流和套接字
+            out.flush();
             socket.shutdownOutput();
-            fis.close();
             socket.close();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

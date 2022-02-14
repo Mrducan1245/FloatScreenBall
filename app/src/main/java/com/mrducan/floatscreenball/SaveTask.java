@@ -24,6 +24,7 @@ import java.util.Locale;
 public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
     public String fileURL;
     public String fileName;
+    public int TAG = 0;
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected Bitmap doInBackground(Image... args) {
@@ -61,12 +62,24 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
             FileOutputStream fos = null;
             try {
                 fileURL = createFile();
-                Log.e("doInBackground","图片名字未："+fileURL);
+                Log.e("doInBackground","图片名字为："+fileURL);
                 fileImage = new File(fileURL);
                 if (!fileImage.exists()) {
                     fileImage.createNewFile();
                     fos = new FileOutputStream(fileImage);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+
+                    //开启新的线程发送图片
+                    Bitmap finalBitmap = bitmap;
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PosteTask.posteFileName(fileName);
+                            PosteTask.postePic(finalBitmap);
+                            TAG = 1;
+                        }
+                    }).start();
+
                     fos.flush();
                 }
             } catch (IOException e) {
@@ -78,14 +91,13 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                     } catch (IOException e) {
                     }
                 }
-                if (null != bitmap && !bitmap.isRecycled()) {
+                if (null != bitmap && !bitmap.isRecycled() && TAG == 1) {
                     bitmap.recycle();
                     bitmap = null;
                 }
 
             }
-            PosteTask.posteFileName(fileName);
-            PosteTask.postePic(fileURL);
+
         }
 
         if (null != fileImage) {
