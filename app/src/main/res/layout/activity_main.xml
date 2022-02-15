@@ -7,6 +7,34 @@
     android:gravity="center"
     android:orientation="vertical">
 
+
+    <ImageView
+        android:id="@+id/iv_show"
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/a76fd507067f86767c74cbeccbfe6b92"
+        android:layout_marginBottom="25dp"/>
+
+
+   <EditText
+       android:id="@+id/et_ip"
+       android:layout_width="270dp"
+       android:layout_height="60dp"
+       android:hint="请输入需要传输电脑的IP地址"
+       android:selectAllOnFocus="true"
+       android:layout_marginBottom="15dp"/>
+
+    <Button
+        android:id="@+id/btn_confirm_ip"
+        android:layout_width="270dp"
+        android:layout_height="60dp"
+        android:layout_margin="10dp"
+        android:text="确认"
+        android:textSize="30sp"
+        android:background="@drawable/buttonshape"
+        android:onClick="onClick"/>
+
     <Button
         android:id="@+id/start_btn"
         android:layout_width="270dp"
@@ -18,36 +46,6 @@
         android:shadowDy="0"
         android:shadowRadius="5"
         android:text="打开悬浮球"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onClick"/>
-
-    <Button
-        android:id="@+id/show_btn"
-        android:layout_width="270dp"
-        android:layout_height="60dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="显示悬浮球"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:onClick="onClick"/>
-
-    <Button
-        android:id="@+id/hide_btn"
-        android:layout_width="270dp"
-        android:layout_height="60dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/buttonshape"
-        android:shadowColor="#A8A8A8"
-        android:shadowDx="0"
-        android:shadowDy="0"
-        android:shadowRadius="5"
-        android:text="隐藏悬浮球"
         android:textColor="#FFFFFF"
         android:textSize="30sp"
         android:onClick="onClick"/>

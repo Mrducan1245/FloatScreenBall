@@ -13,15 +13,23 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
     private MyApplication myApplication;
     private  Intent myIntent;
+
+    private EditText edtIp;
+    private InputMethodManager imm;
+
+    private String IP;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -29,10 +37,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        edtIp = findViewById(R.id.et_ip);
+
+        edtIp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                edtIp.requestFocus();
+                imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(edtIp,InputMethodManager.SHOW_FORCED);
+            }
+        });
+
         myApplication = (MyApplication) getApplication();
-//
-//        myApplication = new MyApplication();
-//        FloatBallService.application = myApplication;
 
         MediaProjectionManager mediaProjectionManager = (MediaProjectionManager)getSystemService(Context.MEDIA_PROJECTION_SERVICE);
         Intent intent = mediaProjectionManager.createScreenCaptureIntent();
@@ -64,11 +80,13 @@ public class MainActivity extends AppCompatActivity {
             case R.id.start_btn:
                 startService(myIntent);
                 break;
-            case R.id.show_btn:
-                Log.e(TAG, "show_btn");
-                break;
-            case R.id.hide_btn:
-                Log.e(TAG, "hide_btn");
+            case R.id.btn_confirm_ip:
+                IP = edtIp.getText().toString();
+                myApplication.setIP(IP);
+                String adre = IP;
+               Log.e("IP地址","IP地址是："+adre);
+                edtIp.clearFocus();
+                imm.hideSoftInputFromWindow(edtIp.getWindowToken(),0);
                 break;
             case R.id.close_btn:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

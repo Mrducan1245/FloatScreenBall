@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 public class PosteTask {
 
     private static Socket socket;
-    private static final String IP ="192.168.43.17";//服务端的IP地址
+    public static String IP = null;//服务端的IP地址
     private static final int PORT = 8009;
 
     private static FileInputStream fis;

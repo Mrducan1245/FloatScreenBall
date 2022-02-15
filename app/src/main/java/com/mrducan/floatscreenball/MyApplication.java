@@ -7,6 +7,7 @@ import android.media.projection.MediaProjectionManager;
 public class MyApplication extends Application {
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
+    private String IP;
 
     public MediaProjection getMediaProjection() {
         return mediaProjection;
@@ -22,5 +23,13 @@ public class MyApplication extends Application {
 
     public void setMediaProjectionManager(MediaProjectionManager mediaProjectionManager) {
         this.mediaProjectionManager = mediaProjectionManager;
+    }
+
+    public String getIP() {
+        return IP;
+    }
+
+    public void setIP(String IP) {
+        this.IP = IP;
     }
 }
