@@ -12,6 +12,7 @@ import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.Image;
 import android.media.ImageReader;
+import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.net.Uri;
@@ -56,6 +57,12 @@ public class FloatBallService extends Service {
 
     private int resultCode;
     private Intent resultData;
+
+    private Handler handler = new Handler();
+    private int  clickNum = 0;//点击次数用来判断是否双击
+
+    private MediaRecorder mediaRecorder;
+
 
 
     public  MyApplication application;
@@ -110,7 +117,7 @@ public class FloatBallService extends Service {
 
         Log.e(" resultCode"+ resultCode," resultData"+ resultData);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaProjection == null) {
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,resultData);
             Log.e(" onStartCommand"," mediaProjection"+ mediaProjection);
         }
@@ -145,10 +152,12 @@ public class FloatBallService extends Service {
      */
     private void setView(){
         Intent intent = new Intent(FloatBallService.this,MainActivity.class);
+
         Log.e("MotionEvent","intent"+intent);
         mFloatBall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d("btn listener:", "btn is clicked!");
                 PosteTask.IP = application.getIP();
                 mFloatBall.setVisibility(View.INVISIBLE);
                 ScreenShot.getWH(mWindowManager);
@@ -156,6 +165,7 @@ public class FloatBallService extends Service {
                 ScreenShot.createImageReader();
                 Log.e("MotionEvent","createImageReader");
                 ScreenShot.beginScreenShot(mediaProjection,FloatBallService.this,application.getIfSaveImage());
+                mFloatBall.setVisibility(View.VISIBLE);
                 Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                 //弹出Toast
                 Handler handlerThree=new Handler(Looper.getMainLooper());
@@ -164,8 +174,6 @@ public class FloatBallService extends Service {
                         Toast.makeText(getApplicationContext() ,"截图成功并已发送至电脑",Toast.LENGTH_LONG).show();
                     }
                 });
-                mFloatBall.setVisibility(View.VISIBLE);
-
             }
         });
 

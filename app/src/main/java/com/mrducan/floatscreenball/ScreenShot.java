@@ -21,9 +21,11 @@ import android.view.WindowManager;
 
 import androidx.annotation.RequiresApi;
 
+/**
+ * 截图模块
+ */
 public class ScreenShot {
 
-    private static WindowManager windowManager;
     private static int screenDensity;
     private static int screenWidth;
     private static int screenHeight;
@@ -36,16 +38,7 @@ public class ScreenShot {
 
     //设置媒体项目类
     public static void setUpMediaProjection(MediaProjection outMediaProjection) {
-//        if (scIntent == null) {
-//            Intent intent = new Intent(Intent.ACTION_MAIN);
-//            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-//            service.startActivity(intent);
-//        } else {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Log.e("setUpMediaProjection","outMediaProjection");
-                mediaProjection = outMediaProjection;
-//            }
-//        }
+        mediaProjection = outMediaProjection;
     }
 
 
@@ -145,9 +138,6 @@ public class ScreenShot {
                 @Override
                 public void run() {
                     releaseVirtual();
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-////                        stopMediaProjection();
-//                    }
                 }
             }, 1000);
         }

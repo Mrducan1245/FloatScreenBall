@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private String IP ;
 
     private boolean ifEditClick = false;
+    private boolean ifExsitServer =false;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -101,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     myApplication.setIP(IP);
                 }
                 startService(myIntent);
+                ifExsitServer = true;
                 break;
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     ScreenShot.stopMediaProjection();
                 }
                 stopService(myIntent);
+                ifExsitServer = false;
                 break;
         }
     }
