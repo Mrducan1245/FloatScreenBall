@@ -1,46 +1,23 @@
 package com.mrducan.floatscreenball;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.Application;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
-import android.hardware.display.DisplayManager;
-import android.hardware.display.VirtualDisplay;
-import android.media.Image;
-import android.media.ImageReader;
-import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
-import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Parcelable;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Objects;
 
 public class FloatBallService extends Service {
 
@@ -60,12 +37,7 @@ public class FloatBallService extends Service {
 
     private Handler handler = new Handler();
     private int  clickNum = 0;//点击次数用来判断是否双击
-
-    private MediaRecorder mediaRecorder;
-
-
-
-    public  MyApplication application;
+        public  MyApplication application;
 
 
     public FloatBallService() {
@@ -91,11 +63,8 @@ public class FloatBallService extends Service {
 
         application = (MyApplication) getApplication();
         mediaProjectionManager = application.getMediaProjectionManager();
-
         creatView();
         setView();
-        Log.d(" FloatBallService","application" + application);
-        Log.d(" FloatBallService","mediaProjection" + mediaProjection);
     }
 
 
@@ -114,12 +83,8 @@ public class FloatBallService extends Service {
         super.onStartCommand(intent, flags, startId);
         resultCode = intent.getIntExtra("code",-1);
         resultData = intent.getParcelableExtra("data");
-
-        Log.e(" resultCode"+ resultCode," resultData"+ resultData);
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaProjection == null) {
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,resultData);
-            Log.e(" onStartCommand"," mediaProjection"+ mediaProjection);
         }
         return 1;
     }
@@ -152,21 +117,15 @@ public class FloatBallService extends Service {
      */
     private void setView(){
         Intent intent = new Intent(FloatBallService.this,MainActivity.class);
-
-        Log.e("MotionEvent","intent"+intent);
         mFloatBall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("btn listener:", "btn is clicked!");
                 PosteTask.IP = application.getIP();
                 mFloatBall.setVisibility(View.INVISIBLE);
                 ScreenShot.getWH(mWindowManager);
-                Log.e("MotionEvent","getWH");
                 ScreenShot.createImageReader();
-                Log.e("MotionEvent","createImageReader");
                 ScreenShot.beginScreenShot(mediaProjection,FloatBallService.this,application.getIfSaveImage());
                 mFloatBall.setVisibility(View.VISIBLE);
-                Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                 //弹出Toast
                 Handler handlerThree=new Handler(Looper.getMainLooper());
                 handlerThree.post(new Runnable(){

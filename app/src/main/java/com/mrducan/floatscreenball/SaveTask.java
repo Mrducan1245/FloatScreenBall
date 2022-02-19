@@ -8,12 +8,7 @@ import android.media.Image.Plane;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -75,7 +70,6 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
             if (ifSaveImage){
                 FileOutputStream fos = null;
                 try {
-                    Log.e("doInBackground","图片名字为："+fileURL);
                     fileImage = new File(fileURL);
                     if (!fileImage.exists()) {
                         fileImage.createNewFile();
@@ -118,8 +112,6 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
             if (null != fileImage || TAG == 1) {
                 return bitmap;
             }
-            Log.e("我的测试","已经执行了PosteTask.postePic(finalBitmap);");
-
         }
 
         return null;

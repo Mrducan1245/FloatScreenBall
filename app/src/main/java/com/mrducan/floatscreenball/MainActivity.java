@@ -5,19 +5,12 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.text.Editable;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RadioGroup;
@@ -84,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
                 myIntent.putExtra("code",resultCode);
                 myIntent.putExtra("data",data);
-                Log.e("onActivity","成功把MediaProjectionManager和MediaProjection赋给MyApplication");
             }
         }
     }

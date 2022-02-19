@@ -1,10 +1,7 @@
 package com.mrducan.floatscreenball;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Service;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.VirtualDisplay;
@@ -15,10 +12,8 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Surface;
 import android.view.WindowManager;
-
 import androidx.annotation.RequiresApi;
 
 /**
@@ -49,27 +44,21 @@ public class ScreenShot {
         screenDensity = metrics.densityDpi;
         screenWidth = metrics.widthPixels;
         screenHeight = metrics.heightPixels;
-        Log.e("MotionEvent","getWH");
     }
 
     @SuppressLint("WrongConstant")
     public static void createImageReader() {
-        Log.d(" FloatBallService","该函数确实被调用了");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             imageReader = ImageReader.newInstance(screenWidth, screenHeight, PixelFormat.RGBA_8888, 1);
-            Log.d(" FloatBallService","imageReader" + imageReader);
         }
     }
 
     public static void beginScreenShot(MediaProjection outMediaProjection,Context context,Boolean ifSaveImage) {
-        Log.e("beginScreenShot","beginScreenShot" + outMediaProjection );
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.e("beginScreenShot_run","beginScreenShot_run");
                 beginVirtual(outMediaProjection);
-                Log.e("beginScreenShot_run","执行完 beginVirtual"+virtualDisplay);
             }
         }, 0);
 
@@ -77,7 +66,6 @@ public class ScreenShot {
             @Override
             public void run() {
                 beginCapture(outMediaProjection,context,ifSaveImage);
-                Log.e("beginScreenShot_run","执行完  beginCapture"+virtualDisplay);
             }
         }, 150);
     }
@@ -94,7 +82,6 @@ public class ScreenShot {
     private static void virtualDisplay() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             surface = imageReader.getSurface();
-            Log.e(" FloatBallService"," surface" +  surface);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             virtualDisplay = mediaProjection.createVirtualDisplay("screen-mirror", screenWidth,
@@ -114,7 +101,6 @@ public class ScreenShot {
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 acquireLatestImage = imageReader.acquireLatestImage();
-                Log.e("beginCapture","acquireLatestImage"+ acquireLatestImage);
             }
         } catch (IllegalStateException e) {
             if (null != acquireLatestImage) {
