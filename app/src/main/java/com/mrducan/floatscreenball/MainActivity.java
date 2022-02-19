@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,8 +30,11 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText edtIp;
     private InputMethodManager imm;
+    private RadioGroup rgIfSaveImage;
 
-    private String IP;
+    private String IP ;
+
+    private boolean ifEditClick = false;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -38,10 +43,22 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         edtIp = findViewById(R.id.et_ip);
+        rgIfSaveImage = findViewById(R.id.rg_ifSaveImage);
+
+        rgIfSaveImage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.ib_yes){
+                    myApplication.setIfsaveImage();
+                }
+            }
+        });
+
 
         edtIp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                ifEditClick = true;
                 edtIp.requestFocus();
                 imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(edtIp,InputMethodManager.SHOW_FORCED);
@@ -78,15 +95,24 @@ public class MainActivity extends AppCompatActivity {
         String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:
+                if (IP==null){
+                    IP = "192.168.43.17";
+                    Toast.makeText(MainActivity.this,"未输入IP地址，将采用默认地址："+IP,Toast.LENGTH_LONG).show();
+                    myApplication.setIP(IP);
+                }
                 startService(myIntent);
                 break;
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
-                myApplication.setIP(IP);
-                String adre = IP;
-               Log.e("IP地址","IP地址是："+adre);
-                edtIp.clearFocus();
-                imm.hideSoftInputFromWindow(edtIp.getWindowToken(),0);
+                if (IP==null){
+                    IP = "192.168.43.17";
+                    Toast.makeText(MainActivity.this,"未输入IP地址，将采用默认地址："+IP,Toast.LENGTH_LONG).show();
+                    myApplication.setIP(IP);
+                }
+                if (ifEditClick){
+                    edtIp.clearFocus();
+                    imm.hideSoftInputFromWindow(edtIp.getWindowToken(),0);
+                }
                 break;
             case R.id.close_btn:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

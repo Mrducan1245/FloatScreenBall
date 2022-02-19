@@ -155,7 +155,7 @@ public class FloatBallService extends Service {
                 Log.e("MotionEvent","getWH");
                 ScreenShot.createImageReader();
                 Log.e("MotionEvent","createImageReader");
-                ScreenShot.beginScreenShot(mediaProjection);
+                ScreenShot.beginScreenShot(mediaProjection,FloatBallService.this,application.getIfSaveImage());
                 Log.e("MotionEvent","ACTION_DOWN按下了，并且完成了截图");
                 //弹出Toast
                 Handler handlerThree=new Handler(Looper.getMainLooper());

@@ -8,6 +8,7 @@ public class MyApplication extends Application {
     private MediaProjectionManager mediaProjectionManager;
     private MediaProjection mediaProjection;
     private String IP;
+    private boolean ifSaveImage = false;
 
     public MediaProjection getMediaProjection() {
         return mediaProjection;
@@ -31,5 +32,13 @@ public class MyApplication extends Application {
 
     public void setIP(String IP) {
         this.IP = IP;
+    }
+
+    public void setIfsaveImage() {
+        ifSaveImage = true;
+    }
+
+    public boolean getIfSaveImage(){
+        return ifSaveImage;
     }
 }

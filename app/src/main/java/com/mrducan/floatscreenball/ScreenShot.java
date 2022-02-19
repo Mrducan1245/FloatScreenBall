@@ -33,6 +33,7 @@ public class ScreenShot {
     private static ImageReader imageReader;
     public static Surface surface;
 
+
     //设置媒体项目类
     public static void setUpMediaProjection(MediaProjection outMediaProjection) {
 //        if (scIntent == null) {
@@ -67,7 +68,7 @@ public class ScreenShot {
         }
     }
 
-    public static void beginScreenShot(MediaProjection outMediaProjection) {
+    public static void beginScreenShot(MediaProjection outMediaProjection,Context context,Boolean ifSaveImage) {
         Log.e("beginScreenShot","beginScreenShot" + outMediaProjection );
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -82,7 +83,7 @@ public class ScreenShot {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                beginCapture(outMediaProjection);
+                beginCapture(outMediaProjection,context,ifSaveImage);
                 Log.e("beginScreenShot_run","执行完  beginCapture"+virtualDisplay);
             }
         }, 150);
@@ -115,7 +116,7 @@ public class ScreenShot {
 
     }
 
-    private static void beginCapture(MediaProjection outMediaProjection) {
+    private static void beginCapture(MediaProjection outMediaProjection,Context context,Boolean ifSaveImage) {
         Image acquireLatestImage = null;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -134,9 +135,9 @@ public class ScreenShot {
         }
 
         if (acquireLatestImage == null) {
-            beginScreenShot(outMediaProjection);
+            beginScreenShot(outMediaProjection,context,ifSaveImage);
         } else {
-            SaveTask saveTask = new SaveTask();
+            SaveTask saveTask = new SaveTask(context,ifSaveImage);
             AsyncTaskCompat.executeParallel(saveTask, acquireLatestImage);
 
             new Handler().postDelayed(new Runnable() {

@@ -1,5 +1,6 @@
 package com.mrducan.floatscreenball;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.Image;
@@ -24,7 +25,17 @@ import java.util.Locale;
 public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
     public String fileURL;
     public String fileName;
-    public int TAG = 0;
+    public int TAG = 0;//用这个标签确定是否执行过发送图片task
+    @SuppressLint("StaticFieldLeak")
+    public Context context;
+    public boolean ifSaveImage;//是否保存截图为本地文件
+
+    public SaveTask(Context context,Boolean ifSaveImage){
+        super();
+        this.context = context;
+        this.ifSaveImage = ifSaveImage;
+
+    }
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected Bitmap doInBackground(Image... args) {
@@ -58,50 +69,57 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
         image.close();
         File fileImage = null;
+
         if (null != bitmap) {
-            FileOutputStream fos = null;
-            try {
-                fileURL = createFile();
-                Log.e("doInBackground","图片名字为："+fileURL);
-                fileImage = new File(fileURL);
-                if (!fileImage.exists()) {
-                    fileImage.createNewFile();
-                    fos = new FileOutputStream(fileImage);
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-
-                    //开启新的线程发送图片
-                    Bitmap finalBitmap = bitmap;
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            PosteTask.posteFileName(fileName);
-                            PosteTask.postePic(finalBitmap);
-                            TAG = 1;
-                        }
-                    }).start();
-
-                    fos.flush();
-                }
-            } catch (IOException e) {
-                fileImage = null;
-            } finally {
-                if (null != fos) {
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
+            fileURL = createFile();
+            if (ifSaveImage){
+                FileOutputStream fos = null;
+                try {
+                    Log.e("doInBackground","图片名字为："+fileURL);
+                    fileImage = new File(fileURL);
+                    if (!fileImage.exists()) {
+                        fileImage.createNewFile();
+                        fos = new FileOutputStream(fileImage);
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        fos.flush();
                     }
+                } catch (IOException e) {
+                    fileImage = null;
+                } finally {
+                    if (null != fos) {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                        }
+                    }
+
                 }
-                if (null != bitmap && !bitmap.isRecycled() && TAG == 1) {
-                    bitmap.recycle();
-                    bitmap = null;
-                }
+
+
 
             }
 
-        }
+            //开启新的线程发送图片
+            Bitmap finalBitmap = bitmap;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    PosteTask.posteFileName(fileName,context);
+                    PosteTask.postePic(finalBitmap);
+                    TAG = 1;
+                }
+            }).start();
 
-        if (null != fileImage) {
-            return bitmap;
+            if (null != bitmap && !bitmap.isRecycled() && TAG == 1) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+
+            if (null != fileImage || TAG == 1) {
+                return bitmap;
+            }
+            Log.e("我的测试","已经执行了PosteTask.postePic(finalBitmap);");
+
         }
 
         return null;

@@ -25,6 +25,31 @@
        android:selectAllOnFocus="true"
        android:layout_marginBottom="15dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="提示：不保存截图至本机可有效节省存储空间"/>
+
+    <RadioGroup
+        android:id="@+id/rg_ifSaveImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/ib_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="保存截图至本机"/>
+
+        <RadioButton
+            android:id="@+id/ib_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="只发送不保存图"/>
+
+    </RadioGroup>
+
     <Button
         android:id="@+id/btn_confirm_ip"
         android:layout_width="270dp"
