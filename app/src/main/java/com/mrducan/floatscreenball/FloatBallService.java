@@ -139,7 +139,7 @@ public class FloatBallService extends Service {
                 Handler handlerThree=new Handler(Looper.getMainLooper());
                 handlerThree.post(new Runnable(){
                     public void run(){
-                        Toast.makeText(getApplicationContext() ,"截图成功并已发送至电脑",Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext() ,"截图成功并已发送至电脑",Toast.LENGTH_SHORT).show();
                     }
                 });
             }
