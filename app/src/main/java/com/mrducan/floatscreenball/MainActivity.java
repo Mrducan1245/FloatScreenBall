@@ -132,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
                 startService(myIntent);
                 ifExsitServer = true;
                 break;
+
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
                 if (IP.isEmpty() || IP == null){
