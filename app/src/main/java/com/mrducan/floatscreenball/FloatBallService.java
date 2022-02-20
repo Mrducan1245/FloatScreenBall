@@ -121,6 +121,15 @@ public class FloatBallService extends Service {
             @Override
             public void onClick(View v) {
                 PosteTask.IP = application.getIP();
+                if (PosteTask.IP == null){
+                    Handler handlerThree=new Handler(Looper.getMainLooper());
+                    handlerThree.post(new Runnable(){
+                        public void run(){
+                            Toast.makeText(getApplicationContext() ,"请输入IP地址",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    return;
+                }
                 mFloatBall.setVisibility(View.INVISIBLE);
                 ScreenShot.getWH(mWindowManager);
                 ScreenShot.createImageReader();

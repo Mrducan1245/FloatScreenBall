@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">FloatScreenBall</string>
+    <string name="app_name">截图宝</string>
     <string name="toast_screen">您已经成功截图：</string>
 </resources>

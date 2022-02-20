@@ -12,9 +12,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -24,11 +33,17 @@ public class MainActivity extends AppCompatActivity {
     private EditText edtIp;
     private InputMethodManager imm;
     private RadioGroup rgIfSaveImage;
+    private Spinner spinIp;
+    private ImageView ivAdd;
 
     private String IP ;
 
     private boolean ifEditClick = false;
     private boolean ifExsitServer =false;
+
+    private LinkedList<IpItem> ipItems;
+    private IpAdapter ipAdapter;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -38,6 +53,35 @@ public class MainActivity extends AppCompatActivity {
 
         edtIp = findViewById(R.id.et_ip);
         rgIfSaveImage = findViewById(R.id.rg_ifSaveImage);
+        spinIp = findViewById(R.id.spin_ip);
+        ivAdd = findViewById(R.id.iv_add);
+        ipItems = new LinkedList<>();
+        spinIp =findViewById(R.id.spin_ip);
+
+        ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
+        spinIp.setAdapter(ipAdapter);
+//        spinIp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                edtIp.setVisibility(View.GONE);
+//            }
+//        });
+
+
+
+        ivAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IP = edtIp.getText().toString();
+                if (!IP.isEmpty() && !(ipItems.contains(IP))){
+                    ipItems.add(new IpItem(R.drawable.ico,IP));
+                    //点击后创建新的adpter
+                    ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
+                    spinIp.setAdapter(ipAdapter);
+                }
+            }
+        });
+
 
         rgIfSaveImage.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -88,21 +132,21 @@ public class MainActivity extends AppCompatActivity {
         String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:
-                if (IP==null){
-                    IP = "192.168.43.17";
-                    Toast.makeText(MainActivity.this,"未输入IP地址，将采用默认地址："+IP,Toast.LENGTH_LONG).show();
-                    myApplication.setIP(IP);
+                if (IP.isEmpty()){
+                    Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_LONG).show();
+                    return;
                 }
+                myApplication.setIP(IP);
                 startService(myIntent);
                 ifExsitServer = true;
                 break;
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
-                if (IP==null){
-                    IP = "192.168.43.17";
-                    Toast.makeText(MainActivity.this,"未输入IP地址，将采用默认地址："+IP,Toast.LENGTH_LONG).show();
-                    myApplication.setIP(IP);
+                if (IP.isEmpty()){
+                    Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                myApplication.setIP(IP);
                 if (ifEditClick){
                     edtIp.clearFocus();
                     imm.hideSoftInputFromWindow(edtIp.getWindowToken(),0);
@@ -114,6 +158,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 stopService(myIntent);
                 ifExsitServer = false;
+                break;
+
+            case R.id.iv_icon:
+
                 break;
         }
     }
