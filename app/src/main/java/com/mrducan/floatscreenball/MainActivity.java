@@ -60,13 +60,6 @@ public class MainActivity extends AppCompatActivity {
 
         ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
         spinIp.setAdapter(ipAdapter);
-//        spinIp.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                edtIp.setVisibility(View.GONE);
-//            }
-//        });
-
 
 
         ivAdd.setOnClickListener(new View.OnClickListener() {
@@ -129,10 +122,9 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("NonConstantResourceId")
     public void onClick(View view) {
-        String TAG = "MainActivity";
         switch (view.getId()){
             case R.id.start_btn:
-                if (IP.isEmpty()){
+                if (IP.isEmpty() || IP == null){
                     Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -142,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
-                if (IP.isEmpty()){
+                if (IP.isEmpty() || IP == null){
                     Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_SHORT).show();
                     return;
                 }
