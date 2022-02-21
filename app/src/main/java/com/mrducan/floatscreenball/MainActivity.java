@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -22,8 +24,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,6 +53,10 @@ public class MainActivity extends AppCompatActivity {
     private LinkedList<IpItem> ipItems;
     private IpAdapter ipAdapter;
 
+    private String filePath;
+
+    private SharedPreferences preference;
+
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -60,6 +73,18 @@ public class MainActivity extends AppCompatActivity {
 
         ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
         spinIp.setAdapter(ipAdapter);
+
+        preference = (SharedPreferences) this.getPreferences(Context.MODE_PRIVATE);
+        filePath =preference .getString("path","");
+        if (!filePath.isEmpty()){
+            try {
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath));
+                ipItems = (LinkedList<IpItem>) objectInputStream.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+
+        }
 
 
         ivAdd.setOnClickListener(new View.OnClickListener() {
@@ -118,6 +143,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        File file = new File("ipSave");
+        filePath = file.getPath();
+        @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor =  preference.edit();
+        editor.putString("path",filePath);
+        try {
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            objectOutputStream.writeObject(ipItems);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     @SuppressLint("NonConstantResourceId")
