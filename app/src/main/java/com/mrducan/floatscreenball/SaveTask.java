@@ -25,6 +25,8 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
     public Context context;
     public boolean ifSaveImage;//是否保存截图为本地文件
 
+    private boolean ifConfirmPoste = true;//是否发送成功
+
     public SaveTask(Context context,Boolean ifSaveImage){
         super();
         this.context = context;
@@ -88,9 +90,6 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                     }
 
                 }
-
-
-
             }
 
             //开启新的线程发送图片
@@ -99,7 +98,7 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
                 @Override
                 public void run() {
                     PosteTask.posteFileName(fileName,context);
-                    PosteTask.postePic(finalBitmap);
+                    ifConfirmPoste = PosteTask.postePic(finalBitmap,context);
                     TAG = 1;
                 }
             }).start();
@@ -115,6 +114,10 @@ public class SaveTask extends AsyncTask<Image, Void, Bitmap> {
         }
 
         return null;
+    }
+
+   public boolean getIfConfirmPoste(){
+        return ifConfirmPoste;
     }
 
     @Override

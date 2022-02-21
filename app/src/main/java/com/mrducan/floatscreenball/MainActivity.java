@@ -70,21 +70,28 @@ public class MainActivity extends AppCompatActivity {
         ivAdd = findViewById(R.id.iv_add);
         ipItems = new LinkedList<>();
         spinIp =findViewById(R.id.spin_ip);
-
         ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
         spinIp.setAdapter(ipAdapter);
 
-        preference = (SharedPreferences) this.getPreferences(Context.MODE_PRIVATE);
-        filePath =preference .getString("path","");
-        if (!filePath.isEmpty()){
-            try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath));
-                ipItems = (LinkedList<IpItem>) objectInputStream.readObject();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-            }
+//        try {
+//            ObjectInputStream objectInputStream = new ObjectInputStream(openFileInput("ipData"));
+//            if (objectInputStream != null){
+//                ipItems = (LinkedList<IpItem>) objectInputStream.readObject();
+//            }
+//        } catch (IOException | ClassNotFoundException e) {
+//            e.printStackTrace();
+//        }
 
-        }
+//        if (filePath != null && !filePath.isEmpty()  ){
+//            try {
+//                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(filePath));
+//                ipItems = (LinkedList<IpItem>) objectInputStream.readObject();
+//                ipAdapter = new IpAdapter(ipItems,MainActivity.this,edtIp,IP);
+//                spinIp.setAdapter(ipAdapter);
+//            } catch (IOException | ClassNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
 
         ivAdd.setOnClickListener(new View.OnClickListener() {
@@ -146,13 +153,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        File file = new File("ipSave");
-        filePath = file.getPath();
-        @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor =  preference.edit();
-        editor.putString("path",filePath);
         try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(openFileOutput("ipData",Context.MODE_PRIVATE));
             objectOutputStream.writeObject(ipItems);
+            objectOutputStream.flush();
             objectOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -164,18 +168,22 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.start_btn:
-                if (IP.isEmpty() || IP == null){
+                if (IP == null || IP.isEmpty()){
                     Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_LONG).show();
                     return;
                 }
                 myApplication.setIP(IP);
-                startService(myIntent);
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O){
+                    startForegroundService(myIntent);
+                }else {
+                    startService(myIntent);
+                }
                 ifExsitServer = true;
                 break;
 
             case R.id.btn_confirm_ip:
                 IP = edtIp.getText().toString();
-                if (IP.isEmpty() || IP == null){
+                if (IP == null || IP.isEmpty()){
                     Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -192,9 +200,7 @@ public class MainActivity extends AppCompatActivity {
                 stopService(myIntent);
                 ifExsitServer = false;
                 break;
-
             case R.id.iv_icon:
-
                 break;
         }
     }

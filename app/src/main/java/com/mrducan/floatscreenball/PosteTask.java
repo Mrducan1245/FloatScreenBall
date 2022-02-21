@@ -62,7 +62,8 @@ public class PosteTask {
 
 
     //    发送图片到客户端
-    public static void postePic(Bitmap bitmap) {
+    public static boolean postePic(Bitmap bitmap, Context context) {
+        boolean ifReturn = true;
         try {
             Socket socket = new Socket(IP,PORT);
             out = socket.getOutputStream();
@@ -74,17 +75,36 @@ public class PosteTask {
             out.flush();
             socket.shutdownOutput();
             socket.close();
+
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }finally {
             try {
-                out.close();
+                if (out == null) {
+                    Handler handlerTwo = new Handler(Looper.getMainLooper());
+                    handlerTwo.post(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context.getApplicationContext(), "IP地址错误", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    ifReturn = false;
+                }else {
+                    Handler handlerTwo = new Handler(Looper.getMainLooper());
+                    handlerTwo.post(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context.getApplicationContext(), "已发送至电脑", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    out.close();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+        return ifReturn;
     }
 
 

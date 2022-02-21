@@ -30,6 +30,8 @@ public class ScreenShot {
     private static ImageReader imageReader;
     public static Surface surface;
 
+    public static boolean ifConfirmPoste = true;
+
 
     //设置媒体项目类
     public static void setUpMediaProjection(MediaProjection outMediaProjection) {
@@ -96,8 +98,9 @@ public class ScreenShot {
 
     }
 
-    private static void beginCapture(MediaProjection outMediaProjection,Context context,Boolean ifSaveImage) {
+    private static void beginCapture(MediaProjection outMediaProjection, Context context, Boolean ifSaveImage) {
         Image acquireLatestImage = null;
+        SaveTask saveTask = null;
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 acquireLatestImage = imageReader.acquireLatestImage();
@@ -116,7 +119,8 @@ public class ScreenShot {
         if (acquireLatestImage == null) {
             beginScreenShot(outMediaProjection,context,ifSaveImage);
         } else {
-            SaveTask saveTask = new SaveTask(context,ifSaveImage);
+            saveTask = new SaveTask(context,ifSaveImage);
+            ifConfirmPoste = saveTask.getIfConfirmPoste();
             AsyncTaskCompat.executeParallel(saveTask, acquireLatestImage);
 
             new Handler().postDelayed(new Runnable() {

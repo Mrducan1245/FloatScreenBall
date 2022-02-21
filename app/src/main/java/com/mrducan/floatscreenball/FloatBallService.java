@@ -1,6 +1,10 @@
 package com.mrducan.floatscreenball;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +41,15 @@ public class FloatBallService extends Service {
 
     private Handler handler = new Handler();
     private int  clickNum = 0;//点击次数用来判断是否双击
-        public  MyApplication application;
+    public  MyApplication application;
+
+    private NotificationManager notificationManager;
+    private Notification notification;
+    private NotificationChannel notificationChannel;
+    private final static String NOTIFICATION_CHANNEL_ID = "CHANNEL_ID";
+    private final static String NOTIFICATION_CHANNEL_NAME = "CHANNEL_NAME";
+    private final static int FOREGROUND_ID=1;
+
 
 
     public FloatBallService() {
@@ -86,7 +98,33 @@ public class FloatBallService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaProjection == null) {
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,resultData);
         }
-        return 1;
+
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notificationChannel = new NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        intent = new Intent(getApplicationContext(), MainActivity.class);  //点击通知栏后想要被打开的页面MainActivity.class
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);  //点击通知栏触发跳转
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                    .setSmallIcon(R.mipmap.screen)
+                    .setContentTitle("截图宝")
+                    .setContentText("点击进入截图宝主页")
+                    .setContentIntent(pendingIntent)
+                    .build();
+
+            notification.flags = Notification.FLAG_NO_CLEAR;
+            startForeground(FOREGROUND_ID, notification);
+        }
+        return Service.START_STICKY;
     }
 
     /**
@@ -135,13 +173,16 @@ public class FloatBallService extends Service {
                 ScreenShot.createImageReader();
                 ScreenShot.beginScreenShot(mediaProjection,FloatBallService.this,application.getIfSaveImage());
                 mFloatBall.setVisibility(View.VISIBLE);
-                //弹出Toast
-                Handler handlerThree=new Handler(Looper.getMainLooper());
-                handlerThree.post(new Runnable(){
-                    public void run(){
-                        Toast.makeText(getApplicationContext() ,"截图成功并已发送至电脑",Toast.LENGTH_SHORT).show();
-                    }
-                });
+
+                if (ScreenShot.ifConfirmPoste){
+                    //弹出Toast
+                    Handler handlerThree=new Handler(Looper.getMainLooper());
+                    handlerThree.post(new Runnable(){
+                        public void run(){
+                            Toast.makeText(getApplicationContext() ,"截图成功",Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
         });
 
