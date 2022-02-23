@@ -136,7 +136,13 @@ public class FloatBallService extends Service {
         mLayoutParams = new WindowManager.LayoutParams();
         mLayoutParams.gravity = Gravity.LEFT |Gravity.TOP;
         //设置window type
-        mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mLayoutParams.type =WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        }
+        else {
+            mLayoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        }
         mLayoutParams.format = PixelFormat.RGBA_8888;
         //注意该属性的设置很重要，FLAG_NOT_FOCUSABLE使浮动窗口不获取焦点,若不设置该属性，屏幕的其它位置点击无效，应为它们无法获取焦点
         mLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
