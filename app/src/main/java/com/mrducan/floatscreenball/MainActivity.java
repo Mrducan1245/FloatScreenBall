@@ -169,7 +169,8 @@ public class MainActivity extends AppCompatActivity {
         switch (view.getId()){
             case R.id.start_btn:
                 if (IP == null || IP.isEmpty()){
-                    Toast.makeText(MainActivity.this,"请输入IP地址",Toast.LENGTH_LONG).show();
+                    IP = "192.168.101.175";
+                    Toast.makeText(MainActivity.this,"将采用默认IP地址",Toast.LENGTH_LONG).show();
                     return;
                 }
                 myApplication.setIP(IP);
