@@ -95,12 +95,11 @@ public class FloatBallService extends Service {
         super.onStartCommand(intent, flags, startId);
         resultCode = intent.getIntExtra("code",-1);
         resultData = intent.getParcelableExtra("data");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && mediaProjection == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ) {
             mediaProjection = mediaProjectionManager.getMediaProjection(resultCode,resultData);
         }
 
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationChannel = new NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
                     NOTIFICATION_CHANNEL_NAME,
@@ -113,7 +112,7 @@ public class FloatBallService extends Service {
 
         intent = new Intent(getApplicationContext(), MainActivity.class);  //点击通知栏后想要被打开的页面MainActivity.class
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);  //点击通知栏触发跳转
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
                     .setSmallIcon(R.mipmap.screen)
                     .setContentTitle("截图宝")

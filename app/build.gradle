@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "com.mrducan.floatscreenball"
         minSdkVersion 16
-        targetSdkVersion 31
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 

@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:scaleType="fitCenter"
-        android:src="@drawable/a76fd507067f86767c74cbeccbfe6b92"
+        android:src="@drawable/dog"
         android:layout_marginBottom="25dp"/>
 
 
